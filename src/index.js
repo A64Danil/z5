@@ -40,6 +40,8 @@ function skipDefault(eventName, target) {
  * @param {Element} target - элемент, на который нужно добавить обработчик
  */
 function emulateClick(target) {
+    const event = new CustomEvent('click');
+    target.dispatchEvent(event);
 }
 
 /**
@@ -50,6 +52,11 @@ function emulateClick(target) {
  * @param {function} fn - функция, которую нужно вызвать при клике на элемент BUTTON внутри target
  */
 function delegate(target, fn) {
+    target.addEventListener('click', function (e) {
+        if (e.target.tagName === 'BUTTON' ) {
+            fn();
+        }
+    })
 }
 
 /**
@@ -62,6 +69,20 @@ function delegate(target, fn) {
  * @param {function} fn - обработчик
  */
 function once(target, fn) {
+    var counter = 0;
+
+    target.addEventListener('click', fn);
+    target.addEventListener('click', function () {
+        counter++;
+        console.log('был клик');
+        console.log(counter);
+        if (counter >= 1) {
+            target.removeEventListener('click', fn);
+            console.log('убрали слушатель');
+        }
+    });
+
+
 }
 
 export {
