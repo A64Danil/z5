@@ -61,8 +61,9 @@ body {
     color: #fff;
     font-size: 16px;
     font-weight: bold;
-    padding: 10px;}
-.divPool > .draggable-div span {transition: all 0.3s ease-in;}
+    padding: 10px;
+    transition: all 0.005s ease-in;}
+.divPool > .draggable-div span {}
 .divPool > .draggable-div .size {font-size: 14px; opacity:0;}
 .divPool > .draggable-div:hover .size {font-size: 14px; opacity:1;}
 .divPool > .draggable-div .color {opacity:0.6;}
