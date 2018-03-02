@@ -1,0 +1,73 @@
+* {
+    font-family: Arial;
+
+}
+
+
+body {
+    padding: 50px;
+}
+
+.dnd-wrapper {
+    background-color: #efefef;
+    width: 100%;
+    min-height: 100vh;
+    border: 10px dashed #dedede;
+}
+
+.dnd-wrapper .row:first-of-type {
+    text-align: center;
+}
+.dnd-wrapper h2 {}
+
+.divCreator {
+    border: 3px solid #228c1d;
+    border-radius: 15px;
+    padding: 10px 30px;
+    background-color: #35e430;
+    font-size: 16px;
+    color: #1d7919;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.divCrasher {
+    border: 3px solid #8c0f11;
+    border-radius: 15px;
+    padding: 5px 15px;
+    background-color: #e44748;
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.divCreator:hover {
+    background-color: #30ce2b;
+    color: #186615;
+
+}
+
+.divCrasher:hover {
+    background-color: #bf252d;
+    color: #ccc;
+}
+
+.divPool {position: relative;}
+.divPool > div {height: 100px; width: 100px; background-color: #ddd; border: 1px solid #fff;}
+
+.divPool > .draggable-div  {
+    position: absolute;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;}
+.divPool > .draggable-div span {transition: all 0.3s ease-in;}
+.divPool > .draggable-div .size {font-size: 14px; opacity:0;}
+.divPool > .draggable-div:hover .size {font-size: 14px; opacity:1;}
+.divPool > .draggable-div .color {opacity:0.6;}
+.divPool > .draggable-div:hover .color { opacity:1;}
+
+div {
+
+}
