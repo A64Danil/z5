@@ -7,7 +7,12 @@ var divCreator = document.body.querySelector('.divCreator')
 var divCrasher = document.body.querySelector('.divCrasher')
 var divPool = document.body.querySelector('.divPool')
 console.log(divPool);
+console.log(getOffset(divPool));
 
+var divPoolOffsetTop = getOffset(divPool).top;
+var divPoolOffsetLeft = getOffset(divPool).left;
+
+console.log("Top: " + divPoolOffsetTop + ", Left: " + divPoolOffsetLeft);
 
 var uniqueCounter = 1;
 
@@ -16,13 +21,15 @@ divCrasher.addEventListener('click', crashDiv)
 
 function createDiv(e) {
 
-    var rndWidth = Math.floor(Math.random() * (500 - 100 + 1)) + 100;
-    var rndHeight = Math.floor(Math.random() * (500 - 100 + 1)) + 100;
+    var rndWidth = Math.floor(Math.random() * (300 - 100 + 1)) + 100;
+    var rndHeight = Math.floor(Math.random() * (300 - 100 + 1)) + 100;
     var rndColor = Math.floor(Math.random()*16777215).toString(16);
 
+    var maxX = (divPool.offsetWidth - rndWidth); // дальше этой позиции объект помещать не будем
+    var maxY = (divPool.offsetHeight - rndHeight); // дальше этой позиции объект помещать не будем
 
-    var rndXpos = Math.floor(Math.random() * (1500 - 20 + 1)) + 20;
-    var rndYpos = Math.floor(Math.random() * (600 - 10 + 1)) + 10;
+    var rndXpos = Math.floor(Math.random() * (maxX - 10 + 1)) + 10;
+    var rndYpos = Math.floor(Math.random() * (maxY - 10 + 1)) + 10;
 
     var newDiv = document.createElement('div')
 
@@ -55,30 +62,80 @@ function crashDiv(e) {
 
 function addListeners(target) {
     //target.addEventListener('click', clrCnhg);
+    target.addEventListener('dblclick', clrCnhg);
     target.addEventListener('mousedown', dnd);
+
+
+    const oldZind = parseInt(target.style.zIndex);
+
+
+    const elemWidth = target.offsetWidth;
+    const elemHeight = target.offsetHeight;
+
 
     function clrCnhg(e) {
 
         //console.log(e.currentTarget.className);
         let rndColor = Math.floor(Math.random()*16777215).toString(16);
-        e.currentTarget.style.backgroundColor= '#' + rndColor;
+        target.style.backgroundColor= '#' + rndColor;
+        target.querySelector('.color').textContent = 'Цвет #' + rndColor;
+
     }
 
     function dnd(e) {
         console.log("DND" + e.currentTarget.className);
+        console.log("oldZind " + oldZind);
+        let newZind = oldZind + 1000;
 
-        e.currentTarget.style.zIndex = uniqueCounter + 1000;
+        let elemLeft = parseInt(target.style.left);
+        let elemTop = parseInt(target.style.top);
 
-        let shiftX = (e.pageX - 67) - parseInt(target.style.left);
-        let shiftY = (e.pageY - 182) - parseInt(target.style.top);
+        let shiftX = (e.pageX - divPoolOffsetLeft) - elemLeft;
+        let shiftY = (e.pageY - divPoolOffsetTop) - elemTop;
 
-        console.log("Сдвиг мыши по Х" + shiftX);
-        console.log("Сдвиг мыши по Y" + shiftY);
+
+        let maxX = (divPool.offsetWidth - elemWidth); // дальше этой позиции объект помещать не будем
+        let maxY = (divPool.offsetHeight - elemHeight); // дальше этой позиции объект помещать не будем
+
+        console.log(maxX);
+        console.log(maxY);
+
+        //console.log("Сдвиг мыши по Х" + shiftX);
+        //console.log("Сдвиг мыши по Y" + shiftY);
 
         function moveTo(e) {
-            target.style.left = e.pageX - 67 - shiftX + 'px';
-            target.style.top = e.pageY - 182 - shiftY + 'px';
-            //console.log("мышь по X" + e.clientX);
+
+            let elemLeft = parseInt(target.style.left);
+            let elemTop = parseInt(target.style.top);
+
+            // Ограничиваем зону перетаскивания по горизонтали
+            if (elemLeft > (maxX + 50) || elemLeft < -50) {
+                console.warn("Попали в зону запретную зону")
+                alert("Блок должен находится внутри серой зоны")
+                document.body.removeEventListener('mousemove', moveTo);
+                if (elemLeft > (maxX + 50)) target.style.left = maxX + 'px';
+                else target.style.left = 0 + 'px';
+            }
+            else if (elemLeft > maxX) target.style.left = maxX + 'px';
+            else if (elemLeft < 0) target.style.left = 0 + 'px';
+            else target.style.left = e.pageX - divPoolOffsetLeft - shiftX + 'px'; // Перетаскиваем
+
+            // Ограничиваем зону перетаскивания по вертикали
+            if (elemTop > (maxY + 50) || elemTop < -50) {
+                console.warn("Попали в зону запретную зону")
+                document.body.removeEventListener('mousemove', moveTo);
+                if (elemTop > (maxY + 50)) target.style.top = maxY + 'px';
+                else target.style.top = 0 + 'px';
+            }
+            else if (elemTop > maxY) target.style.top = maxY + 'px';
+            else if (elemTop < 0) target.style.top = 0 + 'px';
+            else target.style.top = e.pageY - divPoolOffsetTop - shiftY + 'px'; // Перетаскиваем
+
+            target.style.zIndex = newZind;
+
+
+            if (target.style.top > maxY) target.style.top = maxY + 'px';
+            //
             //console.log("мышь по Y" + e.clientY);
 
 
@@ -89,7 +146,8 @@ function addListeners(target) {
         document.body.addEventListener('mouseup', function(e) {
             document.body.removeEventListener('mousemove', moveTo);
             console.warn("Отпустили мыш");
-            //target.style.zIndex -= 1000;
+            target.style.zIndex = oldZind;
+
             //ball.onmouseup = null;
         });
 
@@ -98,4 +156,48 @@ function addListeners(target) {
     }
 
 
+}
+
+function getOffset(elem) {
+    if (elem.getBoundingClientRect) {
+        // "правильный" вариант
+        return getOffsetRect(elem)
+    } else {
+        // пусть работает хоть как-то
+        return getOffsetSum(elem)
+    }
+}
+
+function getOffsetRect(elem) {
+    // (1)
+    var box = elem.getBoundingClientRect()
+
+    // (2)
+    var body = document.body
+    var docElem = document.documentElement
+
+    // (3)
+    var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop
+    var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft
+
+    // (4)
+    var clientTop = docElem.clientTop || body.clientTop || 0
+    var clientLeft = docElem.clientLeft || body.clientLeft || 0
+
+    // (5)
+    var top  = box.top +  scrollTop - clientTop
+    var left = box.left + scrollLeft - clientLeft
+
+    return { top: Math.round(top), left: Math.round(left) }
+}
+
+function getOffsetSum(elem) {
+    var top=0, left=0
+    while(elem) {
+        top = top + parseFloat(elem.offsetTop)
+        left = left + parseFloat(elem.offsetLeft)
+        elem = elem.offsetParent
+    }
+
+    return {top: Math.round(top), left: Math.round(left)}
 }

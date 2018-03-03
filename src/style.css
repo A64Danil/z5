@@ -53,7 +53,7 @@ body {
     color: #ccc;
 }
 
-.divPool {position: relative;}
+.divPool {position: relative; height: 700px;}
 .divPool > div {height: 100px; width: 100px; background-color: #ddd; border: 1px solid #fff;}
 
 .divPool > .draggable-div  {
