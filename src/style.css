@@ -5,14 +5,12 @@
 
 
 body {
-    padding: 50px;
+    padding: 0 30px;
 }
 
 .dnd-wrapper {
-    background-color: #efefef;
     width: 100%;
     min-height: 100vh;
-    border: 10px dashed #dedede;
 }
 
 .dnd-wrapper .row:first-of-type {
@@ -53,8 +51,12 @@ body {
     color: #ccc;
 }
 
-.divPool {position: relative; height: 700px;}
+.divPool {margin-top: 30px;
+    position: relative; height: 600px;
+    border: 10px dashed #dedede;
+    background-color: #efefef;}
 .divPool > div {height: 100px; width: 100px; background-color: #ddd; border: 1px solid #fff;}
+
 
 .divPool > .draggable-div  {
     position: absolute;
@@ -62,7 +64,12 @@ body {
     font-size: 16px;
     font-weight: bold;
     padding: 10px;
-    transition: all 0.005s ease-in;}
+    transition: all 0.005s ease-in, background-color 0.2s ease-in;
+
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;}
 .divPool > .draggable-div span {}
 .divPool > .draggable-div .size {font-size: 14px; opacity:0;}
 .divPool > .draggable-div:hover .size {font-size: 14px; opacity:1;}

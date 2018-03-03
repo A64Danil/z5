@@ -1,16 +1,21 @@
 /**
  * Created by Danil on 27.02.2018.
  */
-console.log("NODE JS are working. Русские символы 3");
+console.log("NODE JS are working. Русские символы 4");
 
 var divCreator = document.body.querySelector('.divCreator')
 var divCrasher = document.body.querySelector('.divCrasher')
 var divPool = document.body.querySelector('.divPool')
-console.log(divPool);
+var divPoolStyles = getComputedStyle(divPool, null)
+
 console.log(getOffset(divPool));
 
 var divPoolOffsetTop = getOffset(divPool).top;
 var divPoolOffsetLeft = getOffset(divPool).left;
+
+var border = parseInt(divPoolStyles.getPropertyValue('border-width'));
+
+console.log(border);
 
 console.log("Top: " + divPoolOffsetTop + ", Left: " + divPoolOffsetLeft);
 
@@ -25,8 +30,8 @@ function createDiv(e) {
     var rndHeight = Math.floor(Math.random() * (300 - 100 + 1)) + 100;
     var rndColor = Math.floor(Math.random()*16777215).toString(16);
 
-    var maxX = (divPool.offsetWidth - rndWidth); // дальше этой позиции объект помещать не будем
-    var maxY = (divPool.offsetHeight - rndHeight); // дальше этой позиции объект помещать не будем
+    var maxX = (divPool.offsetWidth - rndWidth - border*2); // дальше этой позиции объект помещать не будем
+    var maxY = (divPool.offsetHeight - rndHeight- border*2); // дальше этой позиции объект помещать не будем
 
     var rndXpos = Math.floor(Math.random() * (maxX - 10 + 1)) + 10;
     var rndYpos = Math.floor(Math.random() * (maxY - 10 + 1)) + 10;
@@ -71,6 +76,7 @@ function addListeners(target) {
 
     const elemWidth = target.offsetWidth;
     const elemHeight = target.offsetHeight;
+    console.log("Высота: " + elemHeight);
 
 
     function clrCnhg(e) {
@@ -94,8 +100,8 @@ function addListeners(target) {
         let shiftY = (e.pageY - divPoolOffsetTop) - elemTop;
 
 
-        let maxX = (divPool.offsetWidth - elemWidth); // дальше этой позиции объект помещать не будем
-        let maxY = (divPool.offsetHeight - elemHeight); // дальше этой позиции объект помещать не будем
+        let maxX = (divPool.offsetWidth - elemWidth - border*2); // дальше этой позиции объект помещать не будем
+        let maxY = (divPool.offsetHeight - elemHeight - border*2); // дальше этой позиции объект помещать не будем
 
         console.log(maxX);
         console.log(maxY);
