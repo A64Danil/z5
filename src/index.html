@@ -11,8 +11,32 @@
     <div class="dnd-wrapper">
         <div class="row">
             <h2>DIV Generator</h2>
+
+            <table class="options">
+                <tr>
+                    <td>
+                        <p class="mini_title hints">Инструкции:</p>
+                        <ol class="hintsList hiddenCollapsed">
+                            <li>Создавайте случайные блоки нажимая зеленую кнопку</li>
+                            <li>Блоки можно перетягивать</li>
+                            <li>На правую кнопку мыши блок меняет цвет</li>
+                            <li>Удаляйте последний блок на красную кнопку</li>
+                        </ol>
+                    </td>
+                    <td>
+                        <p class="mini_title settings">Настройки:</p>
+                        <ul class="settingsList hiddenCollapsed">
+                            <li><input class="form-check-input opacityChange" type="checkbox"  value="" name="opacity-change"> Прозрачность при переносе</li>
+                            <li><input class="form-check-input borderToggle" type="checkbox" checked value="" name="border-change"> Убрать белые рамки</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
             <button class="divCreator">Create a random DIV</button>
             <button class="divCrasher">Destroy last DIV</button>
+
+
 
         </div>
         <div class="row divPool"></div>

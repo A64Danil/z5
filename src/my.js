@@ -7,11 +7,15 @@ var divCreator = document.body.querySelector('.divCreator')
 var divCrasher = document.body.querySelector('.divCrasher')
 var divPool = document.body.querySelector('.divPool')
 var divPoolStyles = getComputedStyle(divPool, null)
+var opacityChekBox = document.body.querySelector('.opacityChange');
+var borderChekBox = document.body.querySelector('.borderToggle');
+
 
 console.log(getOffset(divPool));
 
 var divPoolOffsetTop = getOffset(divPool).top;
 var divPoolOffsetLeft = getOffset(divPool).left;
+
 
 var border = parseInt(divPoolStyles.getPropertyValue('border-width'));
 
@@ -23,6 +27,31 @@ var uniqueCounter = 1;
 
 divCreator.addEventListener('click', createDiv)
 divCrasher.addEventListener('click', crashDiv)
+borderChekBox.addEventListener('click', toggleBorders)
+
+
+document.body.querySelector('.hints').addEventListener('click', function() {
+    if (document.body.querySelector('.hintsList').className == 'hintsList hiddenCollapsed') {
+        removeClass(document.body.querySelector('.hintsList'), 'hiddenCollapsed');
+    } else addClass(document.body.querySelector('.hintsList'), 'hiddenCollapsed');
+
+})
+
+document.body.querySelector('.settings').addEventListener('click', function() {
+    if (document.body.querySelector('.settingsList').className == 'settingsList hiddenCollapsed') {
+        removeClass(document.body.querySelector('.settingsList'), 'hiddenCollapsed');
+    } else addClass(document.body.querySelector('.settingsList'), 'hiddenCollapsed');
+
+})
+
+window.onload = toggleBorders();
+
+function toggleBorders() {
+    if (borderChekBox.checked) {
+        addClass(divPool, 'without-border');
+    }
+    else removeClass(divPool, 'without-border');
+}
 
 function createDiv(e) {
 
@@ -31,7 +60,7 @@ function createDiv(e) {
     var rndColor = Math.floor(Math.random()*16777215).toString(16);
 
     var maxX = (divPool.offsetWidth - rndWidth - border*2); // дальше этой позиции объект помещать не будем
-    var maxY = (divPool.offsetHeight - rndHeight- border*2); // дальше этой позиции объект помещать не будем
+    var maxY = (divPool.offsetHeight - rndHeight - border*2); // дальше этой позиции объект помещать не будем
 
     var rndXpos = Math.floor(Math.random() * (maxX - 10 + 1)) + 10;
     var rndYpos = Math.floor(Math.random() * (maxY - 10 + 1)) + 10;
@@ -66,86 +95,55 @@ function crashDiv(e) {
 }
 
 function addListeners(target) {
-    //target.addEventListener('click', clrCnhg);
-    target.addEventListener('dblclick', clrCnhg);
-    target.addEventListener('mousedown', dnd);
-
-
+    target.addEventListener('mousedown', clrCnhg); // color Change
+    target.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+    });
+    target.addEventListener('mousedown', dnd); // Drag and Drop
     const oldZind = parseInt(target.style.zIndex);
-
 
     const elemWidth = target.offsetWidth;
     const elemHeight = target.offsetHeight;
-    console.log("Высота: " + elemHeight);
 
 
     function clrCnhg(e) {
+        if (e.which == 3) {
+            let rndColor = Math.floor(Math.random()*16777215).toString(16);
+            target.style.backgroundColor= '#' + rndColor;
+            target.querySelector('.color').textContent = 'Цвет #' + rndColor;
 
-        //console.log(e.currentTarget.className);
-        let rndColor = Math.floor(Math.random()*16777215).toString(16);
-        target.style.backgroundColor= '#' + rndColor;
-        target.querySelector('.color').textContent = 'Цвет #' + rndColor;
-
+        }
     }
 
     function dnd(e) {
-        console.log("DND" + e.currentTarget.className);
-        console.log("oldZind " + oldZind);
+        //console.log("DND: " + e.currentTarget.className);
         let newZind = oldZind + 1000;
-
-        let elemLeft = parseInt(target.style.left);
-        let elemTop = parseInt(target.style.top);
-
-        let shiftX = (e.pageX - divPoolOffsetLeft) - elemLeft;
-        let shiftY = (e.pageY - divPoolOffsetTop) - elemTop;
-
-
-        let maxX = (divPool.offsetWidth - elemWidth - border*2); // дальше этой позиции объект помещать не будем
-        let maxY = (divPool.offsetHeight - elemHeight - border*2); // дальше этой позиции объект помещать не будем
-
-        console.log(maxX);
-        console.log(maxY);
-
-        //console.log("Сдвиг мыши по Х" + shiftX);
-        //console.log("Сдвиг мыши по Y" + shiftY);
+        //let shiftX = (e.pageX - divPoolOffsetLeft) - elemLeft; //console.log("Сдвиг мыши по Х" + shiftX);
+        //let shiftY = (e.pageY - divPoolOffsetTop) - elemTop;  //console.log("Сдвиг мыши по Y" + shiftY);
 
         function moveTo(e) {
-            addClass(target, 'active');
-            var ourDiv = document.getElementsByClassName('draggable-div');
-            for (let i = 0; i < ourDiv.length ; i++) {
-                addClass(ourDiv[i], 'non-active') ;
+            if (opacityChekBox.checked) {
+                addClass(target, 'active');
+                addClass(divPool, 'dragging');
             }
-           // addClass(document.getElementsByClassName('.draggable-div'), '.non-active');
+            let newMaxX = (divPool.offsetWidth - elemWidth - border*2); // дальше этой позиции объект помещать не будем
+            let newMaxY = (divPool.offsetHeight - elemHeight - border*2); // дальше этой позиции объект помещать не будем
 
-            let elemLeft = parseInt(target.style.left);
-            let elemTop = parseInt(target.style.top);
+            target.style.left = (parseInt(target.style.left) + e.movementX) + 'px';
+            target.style.top = (parseInt(target.style.top) + e.movementY) + 'px';
 
-            // Ограничиваем зону перетаскивания по горизонтали
-            if (elemLeft > (maxX + 50) || elemLeft < -50) {
-                console.warn("Попали в зону запретную зону")
-                alert("Блок должен находится внутри серой зоны")
-                document.body.removeEventListener('mousemove', moveTo);
-                if (elemLeft > (maxX + 50)) target.style.left = maxX + 'px';
-                else target.style.left = 0 + 'px';
+            if (newMaxX < parseInt(target.style.left)) {
+                target.style.left = newMaxX + 'px';
+            } else if (parseInt(target.style.left) < 0) {
+                target.style.left = 0 + 'px';
             }
-            else if (elemLeft > maxX) target.style.left = maxX + 'px';
-            else if (elemLeft < 0) target.style.left = 0 + 'px';
-            else target.style.left = e.pageX - divPoolOffsetLeft - shiftX + 'px'; // Перетаскиваем
-
-            // Ограничиваем зону перетаскивания по вертикали
-            if (elemTop > (maxY + 50) || elemTop < -50) {
-                console.warn("Попали в зону запретную зону")
-                document.body.removeEventListener('mousemove', moveTo);
-                if (elemTop > (maxY + 50)) target.style.top = maxY + 'px';
-                else target.style.top = 0 + 'px';
+            if (newMaxY < parseInt(target.style.top)) {
+                target.style.top = newMaxY + 'px';
+            } else if (parseInt(target.style.top) < 0) {
+                target.style.top = 0 + 'px';
             }
-            else if (elemTop > maxY) target.style.top = maxY + 'px';
-            else if (elemTop < 0) target.style.top = 0 + 'px';
-            else target.style.top = e.pageY - divPoolOffsetTop - shiftY + 'px'; // Перетаскиваем
 
             target.style.zIndex = newZind;
-            //if (target.style.top > maxY) target.style.top = maxY + 'px';
-            //console.log("мышь по Y" + e.clientY);
         }
 
         document.body.addEventListener('mousemove', moveTo);
@@ -153,11 +151,9 @@ function addListeners(target) {
         document.body.addEventListener('mouseup', function(e) {
             document.body.removeEventListener('mousemove', moveTo);
             removeClass( target, 'active');
-            var ourDiv = document.getElementsByClassName('draggable-div');
-            for (let i = 0; i < ourDiv.length ; i++) {
-                removeClass(ourDiv[i], 'non-active') ;
-            }
-            console.warn("Отпустили мыш");
+            removeClass(divPool, 'dragging');
+
+            //console.warn("Отпустили мыш");
             target.style.zIndex = oldZind;
         });
 

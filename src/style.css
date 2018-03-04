@@ -6,6 +6,7 @@
 
 body {
     padding: 0 30px;
+    background-color: #ececec;
 }
 
 .dnd-wrapper {
@@ -52,9 +53,9 @@ body {
 }
 
 .divPool {margin-top: 30px;
-    position: relative; height: 600px;
-    border: 10px dashed #dedede;
-    background-color: #efefef;}
+    position: relative; height: 800px;
+    border: 10px dashed #ececec;
+    background-color: #fff;}
 .divPool > div {height: 100px; width: 100px; background-color: #ddd; border: 1px solid #fff;}
 
 
@@ -72,12 +73,27 @@ body {
     -webkit-user-select: none;}
 .divPool > .draggable-div span {}
 .divPool > .draggable-div .size {font-size: 14px; opacity:0;}
+.divPool > .draggable-div:hover  {cursor: pointer;}
+.divPool > .draggable-div:focus  {cursor: move;}
 .divPool > .draggable-div:hover .size {font-size: 14px; opacity:1;}
 .divPool > .draggable-div .color {opacity:0.6;}
 .divPool > .draggable-div:hover .color { opacity:1;}
 
-.divPool > .draggable-div.active {opacity: 0.75;}
-.draggable-div.non-active {opacity: 0.45;}
+.divPool.dragging > .draggable-div.active {opacity: 0.85;}
+.divPool.dragging > .draggable-div  {opacity: 0.55;}
+
+.divPool.without-border > .draggable-div  {border: none;}
+
+
+.options {margin: 0 auto; text-align: left}
+.options td {    vertical-align: top; width: 50%;}
+.options .mini_title {text-align: center; cursor: pointer;}
+
+.hintsList, .settingsList {transition: all 0.3s ease-in; height: 80px;overflow: hidden;}
+
+.hiddenCollapsed {
+    height: 0;
+}
 
 div {
 
