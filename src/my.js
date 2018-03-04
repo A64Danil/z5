@@ -110,6 +110,12 @@ function addListeners(target) {
         //console.log("Сдвиг мыши по Y" + shiftY);
 
         function moveTo(e) {
+            addClass(target, 'active');
+            var ourDiv = document.getElementsByClassName('draggable-div');
+            for (let i = 0; i < ourDiv.length ; i++) {
+                addClass(ourDiv[i], 'non-active') ;
+            }
+           // addClass(document.getElementsByClassName('.draggable-div'), '.non-active');
 
             let elemLeft = parseInt(target.style.left);
             let elemTop = parseInt(target.style.top);
@@ -138,23 +144,21 @@ function addListeners(target) {
             else target.style.top = e.pageY - divPoolOffsetTop - shiftY + 'px'; // Перетаскиваем
 
             target.style.zIndex = newZind;
-
-
-            if (target.style.top > maxY) target.style.top = maxY + 'px';
-            //
+            //if (target.style.top > maxY) target.style.top = maxY + 'px';
             //console.log("мышь по Y" + e.clientY);
-
-
         }
 
         document.body.addEventListener('mousemove', moveTo);
 
         document.body.addEventListener('mouseup', function(e) {
             document.body.removeEventListener('mousemove', moveTo);
+            removeClass( target, 'active');
+            var ourDiv = document.getElementsByClassName('draggable-div');
+            for (let i = 0; i < ourDiv.length ; i++) {
+                removeClass(ourDiv[i], 'non-active') ;
+            }
             console.warn("Отпустили мыш");
             target.style.zIndex = oldZind;
-
-            //ball.onmouseup = null;
         });
 
 
@@ -163,6 +167,18 @@ function addListeners(target) {
 
 
 }
+function addClass(o, c){
+    var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g")
+    if (re.test(o.className)) return
+    o.className = (o.className + " " + c).replace(/\s+/g, " ").replace(/(^ | $)/g, "")
+}
+
+function removeClass(o, c){
+    var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g")
+    o.className = o.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "")
+}
+
+
 
 function getOffset(elem) {
     if (elem.getBoundingClientRect) {

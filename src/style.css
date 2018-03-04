@@ -76,6 +76,9 @@ body {
 .divPool > .draggable-div .color {opacity:0.6;}
 .divPool > .draggable-div:hover .color { opacity:1;}
 
+.divPool > .draggable-div.active {opacity: 0.75;}
+.draggable-div.non-active {opacity: 0.45;}
+
 div {
 
 }
