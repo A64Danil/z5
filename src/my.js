@@ -188,8 +188,80 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
      * @todo Create new brunch
      */
     (function () {
-        console.log('Здесь будет тач поддержка')
-        console.log('Это сообщение должно быть в новой ветке')
+        console.log('Здесь будет тач поддержка');
+        console.log('Это сообщение должно быть в новой ветке');
+
+
+        divPool.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+            //alert('обычный тач работает')
+        });
+
+        divPool.addEventListener('touchstart', function (e) {
+            e.preventDefault();
+            //alert('touchstart работает')
+        });
+
+        document.body.addEventListener('touchstart', dndTouch, false);
+
+        function dndTouch(e) {
+            e.preventDefault();
+
+            document.body.addEventListener('touchmove', touchMove, false);
+            //alert('тач работает');
+
+            var touches = e.changedTouches;
+
+            for (var i = 0; i < touches.length; i++) {
+                //log("touchstart:" + i + "...");
+                ongoingTouches.push(copyTouch(touches[i]));
+                //log("touchstart:" + i + ".");
+            }
+
+            function touchMove(e) {
+                e.preventDefault();
+                var touches = e.changedTouches;
+                //alert(touches.length);
+
+                for (var i = 0; i < touches.length; i++) {
+                    alert('палец ' + touches[i].identifier);
+                    if (touches.length > 1) {
+                        alert('пальцев:' + touches.length);
+                    }
+                    //var idx = ongoingTouchIndexById(touches[i].identifier);
+
+
+                    var block = ongoingTouchIndexById(touches[i].identifier);
+
+                    if (block >= 0) {
+                        //alert();
+                        alert('палец ' + block);
+                    }
+                }
+
+                var block = e.target; // привязываем e.target чтобы мышка работала вне блока
+            /*
+                if (e.target.parentNode.className.match(/\bdraggable-div\b/)) {
+                    block = e.target.parentNode;
+                    alert('draggable-div');
+                }
+
+                if (block.parentNode === divPool ) {
+                    alert('мув работает');
+                }
+
+                */
+            }
+
+            document.body.addEventListener('touchend', function (e) {
+                document.body.removeEventListener('touchmove', touchMove);
+                console.log('закончили тач')
+            });
+            //document.body.("touchcancel", handleCancel, false);
+
+        }
+
+
     })();
 
     function addListeners(target) {
