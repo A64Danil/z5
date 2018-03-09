@@ -145,10 +145,6 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
                 let newZind = oldZind + 1000;
 
                 function moveTo(e) {
-                    if (opacityChekBox.checked) {
-                        addClass(block, 'active');
-                        addClass(divPool, 'dragging');
-                    }
                     let newMaxX = (divPool.offsetWidth - elemWidth - border*2); // дальше этой позиции объект ...
                     let newMaxY = (divPool.offsetHeight - elemHeight - border*2); // ... помещать не будем
 
@@ -163,9 +159,14 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
                     // По верхей и нижней границам
                     if (newMaxY < parseInt(block.style.top)) block.style.top = newMaxY + 'px';
                     else if (parseInt(block.style.top) < 0) block.style.top = 0 + 'px';
-
-                    block.style.zIndex = newZind;
                 }
+
+                if (opacityChekBox.checked) {
+                    addClass(block, 'active');
+                    addClass(divPool, 'dragging');
+                }
+
+                block.style.zIndex = newZind;
 
                 document.body.addEventListener('mousemove', moveTo);
 
