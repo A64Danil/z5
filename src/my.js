@@ -2,7 +2,7 @@
  * Created by Danil on 27.02.2018.
  */
 
-console.log("NODE JS are working. Последний апдейт - 10 марта 2018");
+console.log("NODE JS are working. Последний апдейт - 16 марта 2018");
 
 /**
  * Main Wrap Func
@@ -26,19 +26,51 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
 
     var opacityChekBox = document.body.querySelector('.opacityChange');
 
-    document.body.querySelector('.hints').addEventListener('click', function() {
+    document.body.querySelector('.hints').addEventListener('mouseup', function() {
         if (document.body.querySelector('.hintsList').className == 'hintsList hiddenCollapsed') {
             removeClass(document.body.querySelector('.hintsList'), 'hiddenCollapsed');
         } else addClass(document.body.querySelector('.hintsList'), 'hiddenCollapsed');
 
     });
 
-    document.body.querySelector('.settings').addEventListener('click', function() {
+    document.body.querySelector('.settings').addEventListener('mouseup', function() {
         if (document.body.querySelector('.settingsList').className == 'settingsList hiddenCollapsed') {
             removeClass(document.body.querySelector('.settingsList'), 'hiddenCollapsed');
         } else addClass(document.body.querySelector('.settingsList'), 'hiddenCollapsed');
 
     });
+
+    document.body.querySelector('.hints').addEventListener('touchstart', function() {
+        if (document.body.querySelector('.hintsList').className == 'hintsList hiddenCollapsed') {
+            removeClass(document.body.querySelector('.hintsList'), 'hiddenCollapsed');
+        } else addClass(document.body.querySelector('.hintsList'), 'hiddenCollapsed');
+
+    });
+
+    document.body.querySelector('.settings').addEventListener('touchstart', function() {
+        if (document.body.querySelector('.settingsList').className == 'settingsList hiddenCollapsed') {
+            removeClass(document.body.querySelector('.settingsList'), 'hiddenCollapsed');
+        } else addClass(document.body.querySelector('.settingsList'), 'hiddenCollapsed');
+
+    });
+
+
+    /**
+     * TEST fir iOS
+     * Need to see, that's js work
+     * @version 0.0.1
+     */
+        var divGenerator = document.body.querySelector('h2');
+        divGenerator.addEventListener('click', function (e) {
+            console.log('test is done, js working');
+            alert('test is done, js working (click)');
+        });
+
+        divGenerator.addEventListener('touchstart', function (e) {
+            console.log('test is done, js working');
+            alert('test is done, js working (touchstart)');
+        });
+
 
     /**
      * Setting - Toggle Border
@@ -64,7 +96,8 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
      */
     (function () {
         var divCreator = document.body.querySelector('.divCreator')
-        divCreator.addEventListener('click', createDiv)
+        divCreator.addEventListener('mouseup', createDiv)
+        divCreator.addEventListener('touchstart', createDiv)
 
         function createDiv(e) {
 
@@ -106,7 +139,8 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
      */
     (function () {
         var divCrasher = document.body.querySelector('.divCrasher')
-        divCrasher.addEventListener('click', crashDiv)
+        divCrasher.addEventListener('mouseup', crashDiv)
+        divCrasher.addEventListener('touchstart', crashDiv)
 
         function crashDiv(e) {
             if (uniqueCounter == 1 ) throw new Error('There is no blocks to destroy');
@@ -184,88 +218,191 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
 
     /**
      * Touch Support
-     * @version 0.0.0
-     * @todo Create new brunch
+     * @version 0.9.0
+     * @todo Merge touch-branch with master
      */
     (function () {
         console.log('Здесь будет тач поддержка');
         console.log('Это сообщение должно быть в новой ветке');
+        var statusdiv = document.body.querySelector('.statusdiv');
+        var shiftX;
+        var shiftY;
+        var lttimer; // long tap timer
+        var betw={}; // between long tap position
+        var ldelay;
 
 
-        divPool.addEventListener('touchmove', function (e) {
+        var tapped=false // double tap
+
+        document.body.addEventListener('touchstart', function (e) {
             e.preventDefault();
-            //alert('обычный тач работает')
+            e.stopPropagation();
+            //lttimer=setTimeout(longTouch,800)
         });
 
-        divPool.addEventListener('touchstart', function (e) {
+        document.body.addEventListener('touchmove', function (e) {
             e.preventDefault();
-            //alert('touchstart работает')
+            e.stopPropagation();
+            clearTimeout(lttimer);
         });
 
-        document.body.addEventListener('touchstart', dndTouch, false);
+        document.addEventListener('touchend', function(event) {
+            clearTimeout(lttimer);
+        });
+
+        function longTouch(){
+            alert('Для изменения цвета палец надо держать на блоке (1.5секунды)');
+        }
+
+
+        divPool.addEventListener('touchstart', dndTouch, false);
+        divPool.addEventListener('touchmove', dndTouchMove, false);
 
         function dndTouch(e) {
             e.preventDefault();
+            e.stopPropagation();
+            var touchobj = e.changedTouches[0] // первая точка прикосновения
+            startx = parseInt(touchobj.clientX) // положение точки касания по x, относительно левого края браузера
+            starty = parseInt(touchobj.clientY) // положение точки касания по y, относительно top края браузера
 
-            document.body.addEventListener('touchmove', touchMove, false);
-            //alert('тач работает');
+            var block = e.target;
+            var touch = e.targetTouches[0];
 
+            if (e.target.parentNode.className.match(/\bdraggable-div\b/)) {
+                block = e.target.parentNode;
+            }
+
+            if (block.parentNode === divPool ) {  // Check our target on rightness
+                shiftX = (touch.pageX - divPoolOffsetLeft) - block.offsetLeft;
+                shiftY = (touch.pageY - divPoolOffsetTop) - block.offsetTop;
+                statusdiv.innerHTML = 'Touchstart:  shiftX: ' + shiftX + ' shiftY: ' + shiftY;
+
+                /////////
+                ///////// LONG TOUCH START HERE
+                ldelay=new Date();
+                betw.x=e.changedTouches[0].pageX;
+                betw.y=e.changedTouches[0].pageY;
+
+                block.addEventListener('touchend', function(event) {
+                    var pdelay=new Date();
+                    if (event.changedTouches[0].pageX==betw.x && event.changedTouches[0].pageY==betw.y && (pdelay.getTime()-ldelay.getTime())>500) {
+                        clearTimeout(lttimer);
+                        clrCnhg(event);
+                    }
+                });
+                ///////// LONG TOUCH END HERE
+
+                ///////// DOUBLE TAP START HERE
+
+                 if(!tapped){ //if tap is not set, set up single tap
+                        tapped=setTimeout(function(){
+                            tapped=null
+                            //insert things you want to do when single tapped
+                        },300);   //wait 300ms then run single click code
+                    } else {    //tapped within 300ms of last tap. double tap
+                        clearTimeout(tapped); //stop single tap callback
+                        tapped=null
+                        clrCnhg(e);
+                        //insert things you want to do when double tapped
+                    }
+                ///////// DOUBLE TAP END HERE
+                /////////
+
+            }
+
+            // TODO: Delete this fucking redicoulus? What does it mean?
             var touches = e.changedTouches;
 
             for (var i = 0; i < touches.length; i++) {
-                //log("touchstart:" + i + "...");
                 ongoingTouches.push(copyTouch(touches[i]));
-                //log("touchstart:" + i + ".");
             }
 
-            function touchMove(e) {
-                e.preventDefault();
-                var touches = e.changedTouches;
-                //alert(touches.length);
 
-                for (var i = 0; i < touches.length; i++) {
-                    alert('палец ' + touches[i].identifier);
-                    if (touches.length > 1) {
-                        alert('пальцев:' + touches.length);
-                    }
-                    //var idx = ongoingTouchIndexById(touches[i].identifier);
+        }
 
+        function dndTouchMove(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var block = e.target;
+            var touch = e.targetTouches[0];
 
-                    var block = ongoingTouchIndexById(touches[i].identifier);
+            var touches = e.changedTouches;
+            var touchobj = e.changedTouches[0]; // первая точка прикосновения для данного события
+            document.body.querySelector('.touchWatcher').textContent = touches.length;
+            statusdiv.innerHTML = 'shiftX: ' + shiftX + ' shiftY: ' + shiftY;
 
-                    if (block >= 0) {
-                        //alert();
-                        alert('палец ' + block);
-                    }
-                }
-
-                var block = e.target; // привязываем e.target чтобы мышка работала вне блока
-            /*
+            for (var i = 0; i < touches.length; i++) {
                 if (e.target.parentNode.className.match(/\bdraggable-div\b/)) {
                     block = e.target.parentNode;
-                    alert('draggable-div');
                 }
 
                 if (block.parentNode === divPool ) {
-                    alert('мув работает');
+                    // Запоминаем на один раз постоянные величины
+                    const oldZind = parseInt(block.style.zIndex);
+                    const elemWidth = block.offsetWidth;
+                    const elemHeight = block.offsetHeight;
+
+                    let newZind = oldZind + 1000;
+                    // дальше этих позиций объект помещать не будем
+                    let newMaxX = (divPool.offsetWidth - elemWidth - border*2);
+                    let newMaxY = (divPool.offsetHeight - elemHeight - border*2);
+
+                    // Двигаем, изменяя лефт и топ в зависимости от движения мыши
+                    // block.style.left = touch.pageX - divPoolOffsetLeft - (elemWidth / 2) + 'px';
+                    // block.style.top = touch.pageY - divPoolOffsetTop - (elemHeight / 2) + 'px';
+                    block.style.left = touch.pageX - divPoolOffsetLeft - shiftX + 'px';
+                    block.style.top = touch.pageY - divPoolOffsetTop - shiftY + 'px';
+
+                    // Ограничиваем передвижение
+                    // По левой и правой границам
+                     if (newMaxX < parseInt(block.style.left)) block.style.left = newMaxX + 'px';
+                     else if (parseInt(block.style.left) < 0) block.style.left = 0 + 'px';
+                    // По верхей и нижней границам
+                     if (newMaxY < parseInt(block.style.top)) block.style.top = newMaxY + 'px';
+                     else if (parseInt(block.style.top) < 0) block.style.top = 0 + 'px';
+
+                    if (opacityChekBox.checked) {
+                        addClass(block, 'active');
+                        addClass(divPool, 'dragging');
+                    }
+
+                    block.style.zIndex = newZind;
+                } // END OF -- if block == div --
+
+                if (touches.length > 4) {
+                    alert('Ого, вы смогли нажать сразу всей рукой, количество нажатий:' + touches.length);
                 }
+            } // END OF -for-
 
-                */
-            }
+        } // ENF OF dndTouchMove
 
-            document.body.addEventListener('touchend', function (e) {
-                document.body.removeEventListener('touchmove', touchMove);
-                console.log('закончили тач')
-            });
-            //document.body.("touchcancel", handleCancel, false);
 
-        }
+        divPool.addEventListener('touchend', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+        }, false)
+
+
+
+        document.body.addEventListener('touchcancel', function(e) {
+            //divPool.textContent = null;
+            //alert('закончили тач - cancel');
+        });
 
 
     })();
 
+
+    /**
+     * Add events to generated div
+     * @version 1.0.0
+     * func from my homework
+     */
     function addListeners(target) {
-        target.addEventListener('mousedown', clrCnhg); // color Change
+        target.addEventListener('mousedown', function (e) {
+            clrCnhg(e)
+        }); // color Change
+        //target.addEventListener('mousedown', clrCnhg(e)); // NOT WORK
         target.addEventListener('contextmenu', function (e) {
             e.preventDefault();
         });
@@ -276,14 +413,7 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
         const elemWidth = target.offsetWidth;
         const elemHeight = target.offsetHeight;
 
-        function clrCnhg(e) {
-            if (e.which == 3) {
-                let rndColor = Math.floor(Math.random()*16777215).toString(16);
-                target.style.backgroundColor= '#' + rndColor;
-                target.querySelector('.color').textContent = 'Цвет #' + rndColor;
 
-            }
-        }
 
         // ЭТА ФУНКЦИЯ ОТКЛЮЧЕНА
         function dndInner(e) {
@@ -323,7 +453,6 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
                 document.body.removeEventListener('mousemove', moveTo);
                 removeClass( target, 'active');
                 removeClass(divPool, 'dragging');
-
                 //console.warn("Отпустили мыш");
                 target.style.zIndex = oldZind;
             });
@@ -332,6 +461,21 @@ console.log("NODE JS are working. Последний апдейт - 10 март�
 
         }
 
+    }
+
+    /**
+     * Color Change
+     * @version 1.0.0
+     * Change colors on the blocks (by the click or long tap)
+     */
+    function clrCnhg(e) {
+        target = e.target;
+        if (e.which == 0 || e.which == 3) {
+            let rndColor = Math.floor(Math.random()*16777215).toString(16);
+            target.style.backgroundColor= '#' + rndColor;
+            target.querySelector('.color').textContent = 'Цвет #' + rndColor;
+
+        }
     }
 
 })();

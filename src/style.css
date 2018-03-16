@@ -7,6 +7,7 @@
 body {
     padding: 0 30px;
     background-color: #ececec;
+    /*background-color: #4c8dec;*/
 }
 
 .dnd-wrapper {
@@ -95,6 +96,8 @@ body {
     height: 0;
 }
 
-div {
 
+.touchInfo {font-size: 36px; text-align: center; font-weight: bold; }
+
+div {
 }
